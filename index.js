@@ -25,8 +25,15 @@ async function run (){
             const query = {};
             const cursor = partsCollection.find(query);
             const parts = await cursor.toArray();
-            console.log(parts);
             res.send(parts);
+        });
+
+        app.get('/parts/:id',async(req,res)=>{
+            const id = req.params.id;
+            const query = {_id : ObjectId(id)};
+            const parts = await partsCollection.findOne(query);
+            res.send(parts);
+            
         })
     }
     finally{
