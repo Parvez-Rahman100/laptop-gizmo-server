@@ -18,7 +18,16 @@ async function run (){
     try{
         await client.connect();
         const partsCollection = client.db('laptopGizmo').collection('parts');
-        console.log('db connected');
+        
+
+
+        app.get('/parts',async(req,res)=>{
+            const query = {};
+            const cursor = partsCollection.find(query);
+            const parts = await cursor.toArray();
+            console.log(parts);
+            res.send(parts);
+        })
     }
     finally{
 
