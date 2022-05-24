@@ -18,6 +18,7 @@ async function run (){
     try{
         await client.connect();
         const partsCollection = client.db('laptopGizmo').collection('parts');
+        const odersCollection = client.db('laptopGizmo').collection('orders');
         
 
 
@@ -33,7 +34,18 @@ async function run (){
             const query = {_id : ObjectId(id)};
             const parts = await partsCollection.findOne(query);
             res.send(parts);
-            
+        })
+
+
+        app.post('/order',async(req,res)=>{
+              const order = req.body;
+              const query = {name : order.name , orderId : order.orderId};
+              const exist =  await odersCollection.findOne(query);
+              if(exist){
+                  return res.send({success : false , order : exist})
+              }
+              const result = await odersCollection.insertOne(order);
+              return res.send({success : true, result})
         })
     }
     finally{
