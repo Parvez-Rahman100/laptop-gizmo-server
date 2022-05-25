@@ -39,15 +39,29 @@ async function run (){
 
         app.post('/order',async(req,res)=>{
               const order = req.body;
-              const query = {name : order.name , orderId : order.orderId};
+              const query = {email : order.email, orderId : order.orderId};
+              console.log(query);
               const exist =  await odersCollection.findOne(query);
               if(exist){
                   return res.send({success : false , order : exist})
               }
               const result = await odersCollection.insertOne(order);
+              console.log(result);
               return res.send({success : true, result})
         })
+
+
+
+        app.get('/order', async(req,res)=>{
+        const email = req.query.email;
+        const query = {email : email} 
+        const orders = await odersCollection.find(query).toArray(); 
+        res.send(orders)
+        })
     }
+
+    
+
     finally{
 
     }
