@@ -51,6 +51,14 @@ async function run (){
         });
 
 
+        app.get('/order', async(req,res)=>{
+            const email = req.query.email;
+            const query = {email : email} 
+            const orders = await odersCollection.find(query).toArray(); 
+            res.send(orders)
+            });
+
+
         app.post('/reviews',async(req,res)=>{
             const reviews = req.body;
             const query = { email : reviews.email, productName : reviews.productName};
@@ -60,16 +68,18 @@ async function run (){
             }
             const result = await reviewsCollection.insertOne(reviews);
             return res.send({success : true, result})
-      })
+      });
+
+      app.get('/reviews',async(req,res)=>{
+        const query = {};
+        const cursor = reviewsCollection.find(query);
+        const reviews = await cursor.toArray();
+        res.send(reviews);
+    });
 
 
 
-        app.get('/order', async(req,res)=>{
-        const email = req.query.email;
-        const query = {email : email} 
-        const orders = await odersCollection.find(query).toArray(); 
-        res.send(orders)
-        });
+        
         
         
         
