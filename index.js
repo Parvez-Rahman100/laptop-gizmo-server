@@ -19,6 +19,7 @@ async function run (){
         await client.connect();
         const partsCollection = client.db('laptopGizmo').collection('parts');
         const odersCollection = client.db('laptopGizmo').collection('orders');
+        const reviewsCollection = client.db('laptopGizmo').collection('reviews')
         
 
 
@@ -40,7 +41,6 @@ async function run (){
         app.post('/order',async(req,res)=>{
               const order = req.body;
               const query = {email : order.email, orderId : order.orderId};
-              console.log(query);
               const exist =  await odersCollection.findOne(query);
               if(exist){
                   return res.send({success : false , order : exist})
@@ -48,7 +48,19 @@ async function run (){
               const result = await odersCollection.insertOne(order);
               console.log(result);
               return res.send({success : true, result})
-        })
+        });
+
+
+        app.post('/reviews',async(req,res)=>{
+            const reviews = req.body;
+            const query = { email : reviews.email, productName : reviews.productName};
+            const exist =  await reviewsCollection.findOne(query);
+            if(exist){
+                return res.send({success : false , order : exist})
+            }
+            const result = await reviewsCollection.insertOne(reviews);
+            return res.send({success : true, result})
+      })
 
 
 
@@ -57,8 +69,12 @@ async function run (){
         const query = {email : email} 
         const orders = await odersCollection.find(query).toArray(); 
         res.send(orders)
-        })
+        });
+        
+        
+        
     }
+    
 
     
 
