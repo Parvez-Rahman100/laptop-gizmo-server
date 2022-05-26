@@ -22,12 +22,12 @@ function verifyJWt(req,res,next){
         return res.status(401).send({message : 'Unauthorized access'})
     }
     const token = authHeader.split(' ')[1]; 
-    jsonwebtoken.verify(token,process.env.ACCESS_TOKEN_SECRET,function(err,decode){
+    jsonwebtoken.verify(token,process.env.ACCESS_TOKEN_SECRET,function(err){
         if(err){
             return res.status(403).send({message : 'Forbidden Access'})
         }
-        req.decode = decode;
-        next()
+        
+        next();
     })
 }
 
@@ -72,16 +72,10 @@ async function run (){
 
         app.get('/order',verifyJWt, async(req,res)=>{
             const email = req.query.email;
-            const decodedEmail =  req.decode.email;
-            if(email = decodedEmail){
+            
                 const query = {email : email} ;
             const orders = await odersCollection.find(query).toArray(); 
             return res.send(orders)
-            }
-            else{
-                return res.status(403).send({message : 'Forbidden Access'})
-            }
-            
             });
 
             app.get('/users', async(req,res)=>{
