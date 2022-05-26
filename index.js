@@ -84,7 +84,7 @@ async function run (){
             
             });
 
-            app.get('/users', async(req,res)=>{
+            app.get('/users',verifyJWt, async(req,res)=>{
                 const users = await usersCollection.find().toArray()
                 res.send(users);
             })
