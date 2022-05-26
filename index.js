@@ -49,6 +49,12 @@ async function run (){
             res.send(parts);
         });
 
+        app.post('/parts', async (req, res) => {
+            const newProduct = req.body
+            const result = await partsCollection.insertOne(newProduct)
+            res.send(result)
+        })
+
         app.get('/parts/:id',async(req,res)=>{
             const id = req.params.id;
             const query = {_id : ObjectId(id)};
@@ -132,6 +138,14 @@ async function run (){
         }
         
       });
+
+
+      app.get('/admin/:email',async(req,res)=>{
+          const email = req.params.email;
+          const user = await usersCollection.findOne({email : email});
+          const isAdmin = user.role == 'admin';
+          res.send({admin : isAdmin})
+      })
 
 
 
