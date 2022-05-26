@@ -15,6 +15,23 @@ const uri = `mongodb+srv://${process.env.USER_DB}:${process.env.USER_PASS}@lapto
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 
+function verifyJWt(req,res,next){
+
+    const authHeader =req.headers.authorization;
+    if(!authHeader){
+        return res.status(401).send({message : 'Unauthorized access'})
+    }
+    const token = authHeader.split(' ')[1]; 
+    jsonwebtoken.verify(token,process.env.ACCESS_TOKEN_SECRET,function(err,decode){
+        if(err){
+            return res.status(403).send({message : 'Forbidden Access'})
+        }
+        req.decode = decode;
+        next()
+    })
+}
+
+
 async function run (){
     try{
         await client.connect();
@@ -53,12 +70,24 @@ async function run (){
         });
 
 
-        app.get('/order', async(req,res)=>{
+        app.get('/order',verifyJWt, async(req,res)=>{
             const email = req.query.email;
-            const query = {email : email} 
+            const decodedEmail =  req.decode.email;
+            if(email = decodedEmail){
+                const query = {email : email} ;
             const orders = await odersCollection.find(query).toArray(); 
-            res.send(orders)
+            return res.send(orders)
+            }
+            else{
+                return res.status(403).send({message : 'Forbidden Access'})
+            }
+            
             });
+
+            app.get('/users', async(req,res)=>{
+                const users = await usersCollection.find().toArray()
+                res.send(users);
+            })
 
 
         app.post('/reviews',async(req,res)=>{
