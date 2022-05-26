@@ -117,12 +117,20 @@ async function run (){
 
       app.put('/user/admin/:email', async (req, res) => {
         const email = req.params.email;
-        const filter = { email: email };
+        const initiator = req.decode.email;
+        const  initiatorAccount = await usersCollection.findOne({email : initiator});
+        if(initiatorAccount.role == 'admin'){
+            const filter = { email: email };
         const updateDoc = {
           $set: {role : 'admin'},
         };
         const result = await usersCollection.updateOne(filter, updateDoc);
         res.send(result  );
+        }
+        else{
+            res.status(403).send({message : 'forbidden access'})
+        }
+        
       });
 
 
