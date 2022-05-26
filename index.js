@@ -72,16 +72,9 @@ async function run (){
 
         app.get('/order',verifyJWt, async(req,res)=>{
             const email = req.query.email;
-            const decodedEmail =  req.decode.email;
-            if(email = decodedEmail){
                 const query = {email : email} ;
             const orders = await odersCollection.find(query).toArray(); 
             return res.send(orders)
-            }
-            else{
-                return res.status(403).send({message : 'Forbidden Access'})
-            }
-            
             });
 
             app.get('/users',verifyJWt, async(req,res)=>{
@@ -119,6 +112,17 @@ async function run (){
         const result = await usersCollection.updateOne(filter, updateDoc, options);
         const token = jsonwebtoken.sign({email : email}, process.env.ACCESS_TOKEN_SECRET)
         res.send({ result , token}  );
+      });
+
+
+      app.put('/user/admin/:email', async (req, res) => {
+        const email = req.params.email;
+        const filter = { email: email };
+        const updateDoc = {
+          $set: {role : 'admin'},
+        };
+        const result = await usersCollection.updateOne(filter, updateDoc);
+        res.send(result  );
       });
 
 
